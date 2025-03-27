@@ -1,4 +1,5 @@
 Burasheva Aruzhan 23B031266
+Zhanuzak Gauhar 23B031298
 # WanderList
 Project Description
 WanderList is a web application designed for travel enthusiasts, allowing users to create lists of places they want to visit, mark visited locations, share reviews, and upload photos. It helps travelers organize their trips, get inspired by others’ journeys, and share their own experiences.
