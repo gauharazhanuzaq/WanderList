@@ -1,0 +1,45 @@
+.header {
+    display: flex;
+    align-items: center;
+    background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* Устанавливаем картинку как фон */
+    background-size: cover;  
+    background-position: 50%;
+    height: 80px; 
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .logo-container {
+    margin-left: 10px;
+    margin-bottom: 30px;
+  }
+  
+  .logo-text {
+    font-size: 2rem;  
+    font-weight: bold;
+    color: #ffffff;
+    letter-spacing: 2px; 
+  }
+  
+ nav {
+    display: flex;
+    justify-content: flex-end;
+    flex-grow: 1;
+  }
+  
+  nav a, nav button {
+    margin-left: 2rem;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+  }
+  
+  nav a:hover, nav button:hover {
+    color:  #0b4121;
+  }
+  

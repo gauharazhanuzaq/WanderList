@@ -1,14 +1,18 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './auth/login/login.component';
-import { RegisterComponent } from './auth/register/register.component';
-import { PlacesComponent } from './places/places.component';
-import { PlaceDetailsComponent } from './places/place-details/place-details.component';
-
+import { AuthComponent } from './features/auth/auth.component';
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'places', component: PlacesComponent },
-  { path: 'places/:id', component: PlaceDetailsComponent },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  {
+    path: 'home',
+    loadChildren: () => import('./features/home/home.routes').then(m => m.default),
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./features/login/auth.routes').then(m => m.default),
+  },
+  {
+    path: 'places',
+    loadChildren: () => import('./features/places/places.routes').then(m => m.default),
+  },
+  { path: 'auth', component: AuthComponent },
 ];

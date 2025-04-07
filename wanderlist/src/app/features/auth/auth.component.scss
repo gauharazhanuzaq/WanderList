@@ -1,0 +1,33 @@
+.auth-container {
+    margin-top: 2rem; 
+}
+  .auth-switcher {
+    display: flex;
+    gap: 10px;
+    justify-content: center; 
+    margin-bottom: 10px;
+  }
+  
+  .auth-switcher button {
+    padding: 10px 20px;
+    background-color: #0b4121;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .auth-switcher button:hover {
+    background-color: #09632d;
+  }
+  
+  .auth-switcher button:active {
+    background-color: #096e31;
+  }
+  
+  .auth-switcher button:disabled {
+    background-color: #ccc;
+  }
+  
