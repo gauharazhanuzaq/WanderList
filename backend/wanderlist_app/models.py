@@ -9,6 +9,14 @@ class Category(models.Model):
         return self.name
 
 
+class PlaceManager(models.Manager):
+    def visited(self):
+        return self.filter(is_visited=True)
+
+    def unvisited(self):
+        return self.filter(is_visited=False)
+
+
 class Place(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
@@ -18,6 +26,8 @@ class Place(models.Model):
     image = models.ImageField(upload_to='place_images/', null=True, blank=True)
     is_visited = models.BooleanField(default=False)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+
+    objects = PlaceManager()
 
 
 class Review(models.Model):
