@@ -1,27 +1,46 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { LoginCredentials, AuthResponse } from '../models/auth.model';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, tap } from 'rxjs';
+
+export interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  access: string;
+  refresh: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(credentials: LoginCredentials): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/login', credentials)
-      .pipe(tap(res => localStorage.setItem('token', res.token)));
-  }
-  register(credentials: any): Observable<any> {
-    return this.http.post('/api/register', credentials);
+    return this.http.post<AuthResponse>('http://localhost:8000/api/users/login/', credentials)
+      .pipe(
+        tap(res => {
+          localStorage.setItem('access_token', res.access);
+          localStorage.setItem('refresh_token', res.refresh);
+        })
+      );
   }
 
+  register(credentials: any): Observable<any> {
+    return this.http.post('http://localhost:8000/api/users/register/', {
+      username: credentials.username,
+      password: credentials.password
+    });
+  }
+  
+
   logout(): void {
-    localStorage.removeItem('token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('access_token');
   }
 }
+
