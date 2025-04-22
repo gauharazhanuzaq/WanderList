@@ -26,13 +26,9 @@ export class AuthService {
       );
   }
 
-  register(credentials: any): Observable<any> {
-    return this.http.post('http://localhost:8000/api/users/register/', {
-      username: credentials.username,
-      password: credentials.password
-    });
+  register(credentials: LoginCredentials): Observable<any> {
+    return this.http.post('http://localhost:8000/api/users/register/', credentials);
   }
-  
 
   logout(): void {
     localStorage.removeItem('access_token');
@@ -42,5 +38,8 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!localStorage.getItem('access_token');
   }
-}
 
+  getAccessToken(): string | null {
+    return localStorage.getItem('access_token');
+  }
+}
