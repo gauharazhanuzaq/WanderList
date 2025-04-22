@@ -1,1 +1,30 @@
-<p>places works!</p>
+<div class="card">
+    <h2>Add a Place</h2>
+  
+    <input [(ngModel)]="newPlace.title" name="title" placeholder="Title" required />
+    <textarea [(ngModel)]="newPlace.description" name="description" placeholder="Description"></textarea>
+    <input [(ngModel)]="newPlace.country" name="country" placeholder="Country" required />
+    <input [(ngModel)]="newPlace.city" name="city" placeholder="City" required />
+  
+    <label>
+      <input type="checkbox" [(ngModel)]="newPlace.is_visited" name="is_visited" />
+      Visited
+    </label>
+  
+    <input type="file" (change)="onFileSelected($event)" />
+  
+    <button (click)="addPlace()">Add</button>
+  
+    <hr />
+  
+    <div *ngIf="places.length > 0">
+      <div *ngFor="let place of placesToShow">
+        {{ place.title }} - {{ place.description }}
+        <button (click)="removePlace(place.id)">Remove</button>
+      </div>
+  
+      <button *ngIf="places.length > 3 && !showMore" (click)="showMorePlaces()">Show More</button>
+      <button *ngIf="showMore" (click)="showLessPlaces()">Show Less</button>
+    </div>
+  </div>
+  

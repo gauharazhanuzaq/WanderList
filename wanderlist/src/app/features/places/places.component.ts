@@ -1,71 +1,80 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PlaceService } from '../../core/services/place.service'; 
+import { PlaceService } from '../../core/services/place.service';
 
 @Component({
   selector: 'app-places',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <div class="card">
-      <h2>My Places</h2>
-      <input [(ngModel)]="newPlace.name" placeholder="Name">
-      <input [(ngModel)]="newPlace.description" placeholder="Description">
-      <button (click)="addPlace()">Add</button>
-
-      <div *ngIf="places.length > 0">
-        <div *ngFor="let place of placesToShow">
-          {{ place.name }} - {{ place.description }}
-          <button (click)="removePlace(place.id)">Remove</button>
-        </div>
-
-        <button *ngIf="places.length > 3 && !showMore" (click)="showMorePlaces()">Show More</button>
-        <button *ngIf="showMore" (click)="showLessPlaces()">Show Less</button>
-      </div>
-    </div>
-  `,
-  styles: [` 
-    .card { padding: 1rem; background: #fff; border-radius: 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-    input { margin: 0.5rem 0; display: block; }
-  `]
+  templateUrl: './places.component.html',
+  styleUrls: ['./places.component.scss']
 })
 export class PlacesComponent {
-  places: Array<{ id: string, name: string, description: string }> = [];
-  placesToShow: Array<{ id: string, name: string, description: string }> = [];
-  newPlace = { name: '', description: '' };
-  showMore = false; 
+  places: Array<any> = [];
+  placesToShow: Array<any> = [];
+  showMore = false;
+
+  newPlace = {
+    title: '',
+    description: '',
+    country: '',
+    city: '',
+    is_visited: false,
+    image: null as File | null
+  };
 
   constructor(private placeService: PlaceService) {
     this.loadPlaces();
   }
 
-  loadPlaces() {
-    this.placeService.getPlaces().subscribe(
-      (data) => {
-        if (Array.isArray(data)) {
-          this.places = data;
-          this.updatePlacesToShow();
-        } else {
-          console.error('Unexpected data format', data);
-        }
-      },
-      (error) => {
-        console.error('Error loading places', error);
-      }
-    );
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.newPlace.image = file;
+    }
   }
 
   addPlace() {
-    this.placeService.createPlace(this.newPlace).subscribe(() => {
+    const formData = new FormData();
+    formData.append('title', this.newPlace.title);
+    formData.append('description', this.newPlace.description);
+    formData.append('country', this.newPlace.country);
+    formData.append('city', this.newPlace.city);
+    formData.append('is_visited', String(this.newPlace.is_visited));
+    if (this.newPlace.image) {
+      formData.append('image', this.newPlace.image);
+    }
+
+    this.placeService.createPlace(formData).subscribe(() => {
+      this.resetForm();
       this.loadPlaces();
     });
   }
 
+  resetForm() {
+    this.newPlace = {
+      title: '',
+      description: '',
+      country: '',
+      city: '',
+      is_visited: false,
+      image: null
+    };
+  }
+
+  loadPlaces() {
+    this.placeService.getPlaces().subscribe(
+      (data) => {
+        this.places = Array.isArray(data) ? data : [];
+        this.updatePlacesToShow();
+      },
+      (error) => console.error('Error loading places', error)
+    );
+  }
+
   removePlace(id: string) {
-    this.placeService.deletePlace(id).subscribe(() => {
-      this.loadPlaces();
-    });
+    this.placeService.deletePlace(id).subscribe(() => this.loadPlaces());
   }
 
   showMorePlaces() {
@@ -79,10 +88,6 @@ export class PlacesComponent {
   }
 
   updatePlacesToShow() {
-    if (this.showMore) {
-      this.placesToShow = this.places; 
-    } else {
-      this.placesToShow = this.places.slice(0, 3);
-    }
+    this.placesToShow = this.showMore ? this.places : this.places.slice(0, 3);
   }
 }
