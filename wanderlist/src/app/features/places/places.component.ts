@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PlaceService } from '../../core/services/place.service';
+import { HttpHeaders } from '@angular/common/http';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-places',
@@ -14,6 +16,9 @@ export class PlacesComponent {
   places: Array<any> = [];
   placesToShow: Array<any> = [];
   showMore = false;
+  currentUsername: string = '';
+  userId: number | null = null;
+
 
   newPlace = {
     title: '',
@@ -24,8 +29,26 @@ export class PlacesComponent {
     image: null as File | null
   };
 
-  constructor(private placeService: PlaceService) {
+    constructor(private placeService: PlaceService) {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      this.userId = decoded.user_id;
+    }
+  
     this.loadPlaces();
+  }
+
+  setCurrentUser() {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        this.currentUsername = decoded.username;
+      } catch (err) {
+        console.error('Error decoding token:', err);
+      }
+    }
   }
 
   onFileSelected(event: any) {
@@ -46,10 +69,18 @@ export class PlacesComponent {
       formData.append('image', this.newPlace.image);
     }
 
-    this.placeService.createPlace(formData).subscribe(() => {
-      this.resetForm();
-      this.loadPlaces();
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
     });
+
+    this.placeService.createPlace(formData, headers).subscribe(
+      () => {
+        this.resetForm();
+        this.loadPlaces();
+      },
+      error => console.error('Error creating place:', error)
+    );
   }
 
   resetForm() {
@@ -74,6 +105,11 @@ export class PlacesComponent {
   }
 
   removePlace(id: string) {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
     this.placeService.deletePlace(id).subscribe(() => this.loadPlaces());
   }
 
@@ -89,5 +125,14 @@ export class PlacesComponent {
 
   updatePlacesToShow() {
     this.placesToShow = this.showMore ? this.places : this.places.slice(0, 3);
+  }
+
+  getFullImageUrl(imagePath: string): string {
+    if (!imagePath) return '';
+    return imagePath.startsWith('http') ? imagePath : `http://127.0.0.1:8000${imagePath}`;
+  }
+
+  isOwner(place: any): boolean {
+    return place.username === this.currentUsername;
   }
 }
