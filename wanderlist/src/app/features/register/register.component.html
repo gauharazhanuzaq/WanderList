@@ -27,7 +27,9 @@
       <div *ngIf="error" class="error">
         <small>{{ error }}</small>
       </div>
-  
+      <div *ngIf="success" class="success-message">{{ success }}</div>
+      <div *ngIf="error" class="error-message">{{ error }}</div>
+      
       <button type="submit" [disabled]="loading || registerForm.invalid">Register</button>
     </form>
   </div>

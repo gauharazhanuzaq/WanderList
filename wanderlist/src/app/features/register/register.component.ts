@@ -31,17 +31,23 @@ export class RegisterComponent {
     return password && confirmPassword && password !== confirmPassword ? { 'mismatch': true } : null;
   }
 
+  success = '';
+
   onSubmit() {
     if (this.registerForm.invalid) {
       return;
     }
-
+  
     this.loading = true;
+    this.error = '';
+    this.success = '';
+  
     const { username, password } = this.registerForm.value;
-
+  
     this.authService.register({ username, password }).subscribe(
       (response) => {
-        console.log('Registration successful', response);
+        this.success = 'Registration successful';
+        this.loading = false;
       },
       (error) => {
         this.error = 'Registration failed. Please try again.';
@@ -49,4 +55,5 @@ export class RegisterComponent {
       }
     );
   }
+  
 }

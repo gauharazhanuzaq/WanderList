@@ -1,30 +1,105 @@
 <div class="card">
-    <h2>Add a Place</h2>
+  <h2>Add a Place</h2>
+  <button (click)="toggleForm()">
+    {{ showForm ? 'Hide Form' : 'Show Form' }}
+  </button>
+
+  <div *ngIf="showForm">
+    <input 
+      [(ngModel)]="newPlace.title" 
+      name="title" 
+      placeholder="Title" 
+      required 
+      class="form-input"
+    />
+    
+    <textarea 
+      [(ngModel)]="newPlace.description" 
+      name="description" 
+      placeholder="Description" 
+      class="form-textarea"
+    ></textarea>
+    
+    <input 
+      [(ngModel)]="newPlace.country" 
+      name="country" 
+      placeholder="Country" 
+      required 
+      class="form-input"
+    />
+    
+    <input 
+      [(ngModel)]="newPlace.city" 
+      name="city" 
+      placeholder="City" 
+      required 
+      class="form-input"
+    />
   
-    <input [(ngModel)]="newPlace.title" name="title" placeholder="Title" required />
-    <textarea [(ngModel)]="newPlace.description" name="description" placeholder="Description"></textarea>
-    <input [(ngModel)]="newPlace.country" name="country" placeholder="Country" required />
-    <input [(ngModel)]="newPlace.city" name="city" placeholder="City" required />
-  
-    <label>
-      <input type="checkbox" [(ngModel)]="newPlace.is_visited" name="is_visited" />
+    <label class="form-label">
+      <input 
+        type="checkbox" 
+        [(ngModel)]="newPlace.is_visited" 
+        name="is_visited" 
+        class="form-checkbox" 
+      />
       Visited
     </label>
   
-    <input type="file" (change)="onFileSelected($event)" />
+    <input 
+      type="file" 
+      (change)="onFileSelected($event)" 
+      class="form-file"
+    />
   
-    <button (click)="addPlace()">Add</button>
+    <button 
+      [disabled]="!newPlace.title || !newPlace.country || !newPlace.city" 
+      (click)="addPlace()" 
+      class="form-button"
+    >
+      Add
+    </button>
+  </div>
+  <hr />
+    <div class="filters">
+    <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="updatePlacesToShow()" placeholder="Поиск по названию, стране, категории" />
   
-    <hr />
+    <select [(ngModel)]="filterStatus" (change)="updatePlacesToShow()">
+      <option value="">Все</option>
+      <option value="planned">Планируется</option>
+      <option value="visited">Посещено</option>
+    </select>
   
-    <div *ngIf="places.length > 0">
-      <div *ngFor="let place of placesToShow">
-        {{ place.title }} - {{ place.description }}
-        <button (click)="removePlace(place.id)">Remove</button>
-      </div>
-  
-      <button *ngIf="places.length > 3 && !showMore" (click)="showMorePlaces()">Show More</button>
-      <button *ngIf="showMore" (click)="showLessPlaces()">Show Less</button>
+    <select [(ngModel)]="sortOption" (change)="updatePlacesToShow()">
+      <option value="date">По дате</option>
+      <option value="popularity">По популярности</option>
+      <option value="rating">По рейтингу</option>
+    </select>
+  </div>
+  <div *ngIf="places.length > 0" class="places-grid">
+    <div *ngFor="let place of placesToShow" class="place-card">
+      <img 
+        *ngIf="place.image" 
+        [src]="getFullImageUrl(place.image)" 
+        alt="{{ place.title }}" 
+      />
+      
+      <h3>{{ place.title }}</h3>
+      <p><strong>Location:</strong> {{ place.city }}, {{ place.country }}</p>
+      <p>{{ place.description }}</p>
+      <p *ngIf="place.is_visited">Status: <strong>✅ Visited</strong></p>
+      <p><strong>Submitted by:</strong> {{ place.username }}</p>
+      <p><strong>Submitted on:</strong> {{ place.created_at | date: 'medium' }}</p>
+
+      <button *ngIf="isOwner(place)" (click)="removePlace(place.id)">Remove</button>
+
     </div>
   </div>
+
   
+  
+  <div *ngIf="places.length > 3" class="toggle-show">
+    <button *ngIf="!showMore" (click)="showMorePlaces()">Show More</button>
+    <button *ngIf="showMore" (click)="showLessPlaces()">Show Less</button>
+  </div>
+</div>
