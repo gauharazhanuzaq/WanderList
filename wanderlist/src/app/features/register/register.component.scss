@@ -87,3 +87,12 @@ button:active {
 .footer a:hover {
   text-decoration: underline;
 }
+.success-message {
+  color: green;
+  margin-top: 1rem;
+}
+
+.error-message {
+  color: red;
+  margin-top: 1rem;
+}

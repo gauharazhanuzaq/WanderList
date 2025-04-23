@@ -1,4 +1,3 @@
-// src/app/core/services/place.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -10,12 +9,10 @@ export class PlaceService {
 
   constructor(private http: HttpClient) {}
 
-  // Get token from localStorage
   private getToken(): string | null {
     return localStorage.getItem('access');
   }
 
-  // Build headers with Authorization
   private getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
     return new HttpHeaders({
@@ -36,10 +33,11 @@ export class PlaceService {
   createPlace(data: FormData, headers: HttpHeaders): Observable<any> {
     return this.http.post('http://127.0.0.1:8000/api/places/', data, { headers });
   }
+  updatePlace(id: string, formData: FormData, headers: HttpHeaders) {
+    return this.http.put(`http://127.0.0.1:8000/api/places/${id}/`, formData, { headers });
+  }
   
-
-
-
+  
   deletePlace(id: string): Observable<any> {
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders({

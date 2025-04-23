@@ -19,7 +19,6 @@ export class PlacesComponent {
   currentUsername: string = '';
   userId: number | null = null;
 
-
   newPlace = {
     title: '',
     description: '',
@@ -29,13 +28,16 @@ export class PlacesComponent {
     image: null as File | null
   };
 
-    constructor(private placeService: PlaceService) {
+  showForm: boolean = false;  
+
+  constructor(private placeService: PlaceService) {
     const token = localStorage.getItem('access_token');
     if (token) {
       const decoded: any = jwtDecode(token);
       this.userId = decoded.user_id;
     }
-  
+
+    this.setCurrentUser();
     this.loadPlaces();
   }
 
@@ -49,6 +51,13 @@ export class PlacesComponent {
         console.error('Error decoding token:', err);
       }
     }
+  }
+
+  getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
   }
 
   onFileSelected(event: any) {
@@ -69,12 +78,7 @@ export class PlacesComponent {
       formData.append('image', this.newPlace.image);
     }
 
-    const token = localStorage.getItem('access_token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
-
-    this.placeService.createPlace(formData, headers).subscribe(
+    this.placeService.createPlace(formData, this.getAuthHeaders()).subscribe(
       () => {
         this.resetForm();
         this.loadPlaces();
@@ -97,7 +101,9 @@ export class PlacesComponent {
   loadPlaces() {
     this.placeService.getPlaces().subscribe(
       (data) => {
-        this.places = Array.isArray(data) ? data : [];
+        this.places = Array.isArray(data)
+          ? data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          : [];
         this.updatePlacesToShow();
       },
       (error) => console.error('Error loading places', error)
@@ -105,12 +111,9 @@ export class PlacesComponent {
   }
 
   removePlace(id: string) {
-    const token = localStorage.getItem('access_token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+    this.placeService.deletePlace(id).subscribe(() => {
+      this.loadPlaces(); 
     });
-
-    this.placeService.deletePlace(id).subscribe(() => this.loadPlaces());
   }
 
   showMorePlaces() {
@@ -133,6 +136,10 @@ export class PlacesComponent {
   }
 
   isOwner(place: any): boolean {
-    return place.username === this.currentUsername;
+    return place.user === this.userId;
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
   }
 }
