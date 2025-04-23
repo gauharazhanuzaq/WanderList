@@ -159,3 +159,33 @@ textarea:focus {
   border-color: #0b4121;
   outline: none;
 }
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  margin-top: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.filters input[type="text"],
+.filters select {
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s ease-in-out;
+  min-width: 220px;
+  max-width: 300px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filters input[type="text"]:focus,
+.filters select:focus {
+  border-color: #0b4121;
+  outline: none;
+}

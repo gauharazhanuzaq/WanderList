@@ -27,7 +27,12 @@ export class PlacesComponent {
     is_visited: false,
     image: null as File | null
   };
-
+  searchTerm: string = '';
+  filterCountry: string = '';
+  filterCategory: string = '';
+  filterStatus: string = ''; // 'all', 'planned', 'visited'
+  sortOption: string = 'date'; // 'date', 'popularity', 'rating'
+  
   showForm: boolean = false;  
 
   constructor(private placeService: PlaceService) {
@@ -86,7 +91,42 @@ export class PlacesComponent {
       error => console.error('Error creating place:', error)
     );
   }
-
+  updatePlacesToShow() {
+    let filtered = [...this.places];
+  
+    // Поиск по названию, стране, категории
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(place =>
+        place.title.toLowerCase().includes(term) ||
+        place.country.toLowerCase().includes(term) ||
+        (place.category && place.category.toLowerCase().includes(term))
+      );
+    }
+  
+    // Фильтрация по статусу
+    if (this.filterStatus === 'planned') {
+      filtered = filtered.filter(place => !place.is_visited);
+    } else if (this.filterStatus === 'visited') {
+      filtered = filtered.filter(place => place.is_visited);
+    }
+  
+    // Сортировка
+    switch (this.sortOption) {
+      case 'popularity':
+        filtered.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+        break;
+      case 'rating':
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
+      default: // 'date'
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+    }
+  
+    this.placesToShow = this.showMore ? filtered : filtered.slice(0, 3);
+  }
+  
   resetForm() {
     this.newPlace = {
       title: '',
@@ -124,10 +164,6 @@ export class PlacesComponent {
   showLessPlaces() {
     this.showMore = false;
     this.updatePlacesToShow();
-  }
-
-  updatePlacesToShow() {
-    this.placesToShow = this.showMore ? this.places : this.places.slice(0, 3);
   }
 
   getFullImageUrl(imagePath: string): string {
